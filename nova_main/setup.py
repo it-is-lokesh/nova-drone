@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+from glob import glob
 
 package_name = 'nova_main'
 
@@ -10,6 +11,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/nova_main/launch', glob('launch/*')),
+        ('share/nova_main/worlds', glob('worlds/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
