@@ -13,6 +13,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/nova_main/launch', glob('launch/*')),
         ('share/nova_main/worlds', glob('worlds/*')),
+        ('share/nova_main/config', glob('config/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

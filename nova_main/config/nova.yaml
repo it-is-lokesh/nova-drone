@@ -1,0 +1,18 @@
+- topic_name: "/nova/imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- topic_name: "/nova/altimeter"
+  ros_type_name: "ros_gz_interfaces/msg/Altimeter"
+  gz_type_name: "gz.msgs.Altimeter"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- topic_name: "/nova/gazebo/command/motor_speed"
+  ros_type_name: "actuator_msgs/msg/Actuators"
+  gz_type_name: "gz.msgs.Actuators"
+  lazy: true
+  direction: ROS_TO_GZ
+

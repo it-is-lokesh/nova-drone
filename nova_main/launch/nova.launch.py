@@ -8,6 +8,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    pkg_nova_main = get_package_share_directory('nova_main')
 
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -18,6 +19,12 @@ def generate_launch_description():
         }.items(),
     )
 
+    ros_gz_bridge = RosGzBridge(
+        bridge_name='ros_gz_bridge',
+        config_file=os.path.join(pkg_nova_main, 'config', 'nova.yaml')
+    )
+
     return LaunchDescription([
-        gz_sim
+        gz_sim,
+        ros_gz_bridge,
     ])
