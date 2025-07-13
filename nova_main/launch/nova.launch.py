@@ -6,6 +6,8 @@ from launch_ros.actions import Node
 import os
 from ament_index_python.packages import get_package_share_directory
 
+# gz topic -t /nova/gazebo/command/motor_speed --msgtype gz.msgs.Actuators -p 'velocity:[0, 0, 0, 0]'
+
 def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
     pkg_nova_main = get_package_share_directory('nova_main')
