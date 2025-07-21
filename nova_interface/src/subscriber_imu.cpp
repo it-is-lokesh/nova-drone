@@ -15,6 +15,7 @@ private:
     nv_shm_obj_t shm;
     nv_shm_data shm_data;
     nv_imu_data imu_data;
+    int loop;
 public:
     SubscriberIMU() : Node("node_subscriber_imu"){
         shm.shm_id = SHM_SENSOR_IMU;
@@ -28,9 +29,11 @@ public:
         shm.data = (nv_shm_data)mmap(0, shm.shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
         if(shm.data == MAP_FAILED) perror("mmap failed");
 
-        shm.data->data_ptr = (void *)shm.data + sizeof(nv_shm_data_t);
+        shm.data->data_ptr = (char *)shm.data + sizeof(nv_shm_data_t);
         shm_data = (nv_shm_data)shm.data;
         imu_data = (nv_imu_data)shm_data->data_ptr;
+
+        loop = 0;
 
 #ifndef USE_SEMAPHORE
         pthread_mutexattr_init(&shm.attr);
@@ -49,6 +52,11 @@ public:
 #else
             sem_wait(&shm_data->write_sem);
 #endif
+            printf("loop: %d \n", loop++);
+
+            imu_data->sec = msg->header.stamp.sec;
+            imu_data->nsec = msg->header.stamp.nanosec;
+
             imu_data->linear_acceleration.x = msg->linear_acceleration.x;
             imu_data->linear_acceleration.y = msg->linear_acceleration.y;
             imu_data->linear_acceleration.z = msg->linear_acceleration.z;

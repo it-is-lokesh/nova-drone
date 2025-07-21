@@ -50,6 +50,8 @@ typedef struct nv_linear_acceleration_t {
 typedef struct nv_imu_data_t {
     nv_reference_t base;
 
+    int32_t sec;
+    uint32_t nsec;
     nv_linear_acceleration_t linear_acceleration;
     nv_angular_velocity_t angular_velocity;
     nv_orientation_t orientation;

@@ -17,7 +17,7 @@ def generate_launch_description():
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': '-s -r -z  1000000 nova.sdf'
+            'gz_args': '-s -r -z  1000000 nova.sdf --iterations 1000000'
         }.items(),
     )
 
@@ -26,7 +26,13 @@ def generate_launch_description():
         config_file=os.path.join(pkg_nova_main, 'config', 'nova.yaml')
     )
 
+    init_imu_interface = ExecuteProcess(
+        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_imu',],
+        output='screen'
+    )
+
     return LaunchDescription([
         gz_sim,
         ros_gz_bridge,
+        init_imu_interface,
     ])
