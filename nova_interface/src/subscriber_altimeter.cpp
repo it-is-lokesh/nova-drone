@@ -3,7 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <ros_gz_interfaces/msg/altimeter.hpp>
 
-#include <nova_processing/nv_types.hpp>
+#include <nova_processing/nv.hpp>
 
 #include <sys/mman.h>
 #include <sys/stat.h>
