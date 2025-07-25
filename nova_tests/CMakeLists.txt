@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(nova_processing)
+project(nova_tests)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,42 +7,26 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(nova_processing REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
 include_directories(
-  include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../nova_processing/include
 )
 
-file(GLOB_RECURSE NOVA_PROCESSING_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(log_imu src/log_imu.cpp)
 
-add_library(${PROJECT_NAME}
-  ${NOVA_PROCESSING_SOURCES}
-)
+# add_executable(mat_mul src/mat_mul.cpp)
 
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+install(TARGETS
+  log_imu
+  DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS ${PROJECT_NAME}
-  EXPORT export_${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(DIRECTORY include/
-  DESTINATION include
-)
-
-ament_export_targets(export_${PROJECT_NAME})
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-
-
+# install(TARGETS
+#   mat_mul
+#   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
