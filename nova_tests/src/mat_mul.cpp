@@ -3,29 +3,6 @@ using namespace std;
 
 #include <nova_processing/nv.hpp>
 
-template<
-    typename In1, typename In2, typename Out,
-    uint32_t P, uint32_t Q, uint32_t R
->
-void nvMatrixMultiply(
-    nv_mat<In1, P, Q> A, 
-    nv_mat<In2, Q, R> B, 
-    nv_mat<Out, P, R> C
-){
-    uint32_t i, j, k;
-    Out sum;
-
-    for(i = 0; i < P; i++){
-        for(j = 0; j < R; j++){
-            sum = 0;
-            for(k = 0; k < Q; k++){
-                sum += (Out) A[i*Q + k] * (Out) B[k*R + j];
-            }
-            C[i*R + j] = sum;
-        }
-    }
-}
-
 int main(){
     nv_mat<int32_t, 2, 2> mat1;
     nv_mat<int32_t, 2, 2> mat2;
@@ -51,6 +28,4 @@ int main(){
     printf("vals: %d %d %d %d \n", mat3[0][0], mat3[0][1], mat3[1][0], mat3[1][1]);
 
     return 0;
-
-
 }

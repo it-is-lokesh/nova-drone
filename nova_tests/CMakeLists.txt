@@ -18,15 +18,17 @@ include_directories(
 
 add_executable(log_imu src/log_imu.cpp)
 
-# add_executable(mat_mul src/mat_mul.cpp)
+add_executable(mat_mul src/mat_mul.cpp)
 
 install(TARGETS
   log_imu
   DESTINATION lib/${PROJECT_NAME})
 
-# install(TARGETS
-#   mat_mul
-#   DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+  mat_mul
+  DESTINATION lib/${PROJECT_NAME})
+
+target_link_libraries(mat_mul PUBLIC nova_processing::nova_processing)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
