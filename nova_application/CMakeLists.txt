@@ -12,9 +12,13 @@ find_package(nova_processing REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(shm_init src/shm_init.cpp)
-install(TARGETS shm_init DESTINATION lib/${PROJECT_NAME})
-target_link_libraries(shm_init PUBLIC nova_processing::nova_processing)
+add_executable(nv_shm_init src/nv_shm_init.cpp)
+install(TARGETS nv_shm_init DESTINATION lib/${PROJECT_NAME})
+target_link_libraries(nv_shm_init PUBLIC nova_processing::nova_processing)
+
+add_executable(nv_orientation_update src/nv_orientation_update.cpp)
+install(TARGETS nv_orientation_update DESTINATION lib/${PROJECT_NAME})
+target_link_libraries(nv_orientation_update PUBLIC nova_processing::nova_processing)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

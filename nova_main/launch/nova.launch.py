@@ -32,7 +32,7 @@ def generate_launch_description():
     )
 
     init_shm = ExecuteProcess(
-        cmd=['ros2', 'run', 'nova_application', 'shm_init',],
+        cmd=['ros2', 'run', 'nova_application', 'nv_shm_init',],
         output='screen'
     )
 
