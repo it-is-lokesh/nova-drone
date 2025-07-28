@@ -31,8 +31,14 @@ def generate_launch_description():
         output='screen'
     )
 
+    init_shm = ExecuteProcess(
+        cmd=['ros2', 'run', 'nova_application', 'shm_init',],
+        output='screen'
+    )
+
     return LaunchDescription([
         gz_sim,
         ros_gz_bridge,
         init_imu_interface,
+        init_shm,
     ])

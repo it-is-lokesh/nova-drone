@@ -12,30 +12,34 @@ find_package(std_msgs REQUIRED)
 find_package(ros_gz_interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(actuator_msgs REQUIRED)
+find_package(nova_processing REQUIRED)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../nova_processing/include
 )
 
 add_executable(node_subscriber_imu src/subscriber_imu.cpp)
-add_executable(node_subscriber_altimeter src/subscriber_altimeter.cpp)
+# add_executable(node_subscriber_altimeter src/subscriber_altimeter.cpp)
 
 target_link_libraries(node_subscriber_imu PUBLIC 
   rclcpp::rclcpp 
   ${sensor_msgs_TARGETS})
 
-target_link_libraries(node_subscriber_altimeter PUBLIC 
-  rclcpp::rclcpp 
-  ${ros_gz_interfaces_TARGETS}
-)
+# target_link_libraries(node_subscriber_altimeter PUBLIC 
+#   rclcpp::rclcpp 
+#   ${ros_gz_interfaces_TARGETS}
+# )
 
 install(TARGETS
   node_subscriber_imu
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS
-  node_subscriber_altimeter
-  DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS
+#   node_subscriber_altimeter
+#   DESTINATION lib/${PROJECT_NAME})
+
+target_link_libraries(node_subscriber_imu PUBLIC nova_processing::nova_processing)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

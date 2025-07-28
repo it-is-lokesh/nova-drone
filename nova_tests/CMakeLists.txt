@@ -28,7 +28,29 @@ install(TARGETS
   mat_mul
   DESTINATION lib/${PROJECT_NAME})
 
+target_link_libraries(log_imu PUBLIC nova_processing::nova_processing)
 target_link_libraries(mat_mul PUBLIC nova_processing::nova_processing)
+
+
+add_executable(shm_manager src/shm_manager.cpp)
+add_executable(producer src/producer.cpp)
+add_executable(consumer src/consumer.cpp)
+
+install(TARGETS
+  shm_manager
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+  producer
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+  consumer
+  DESTINATION lib/${PROJECT_NAME})
+
+target_link_libraries(shm_manager PUBLIC nova_processing::nova_processing)
+target_link_libraries(producer PUBLIC nova_processing::nova_processing)
+target_link_libraries(consumer PUBLIC nova_processing::nova_processing)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

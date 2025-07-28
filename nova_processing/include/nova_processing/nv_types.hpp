@@ -7,13 +7,13 @@
 #include <pthread.h>
 
 #define COVARIANCE_MAX (9)
-#define SHM_NAME_MAX (10)
 #define USE_SEMAPHORE
 
 typedef float float32_t;
 typedef double float64_t;
 typedef bool nv_bool;
-typedef int32_t nv_size;
+typedef size_t nv_size;
+typedef nv_enum nv_status;
 
 typedef struct nv_reference_t {
     
@@ -65,31 +65,6 @@ typedef struct nv_altimeter_data_t {
     float32_t vertical_velocity;
 } _nv_altimeter_data;
 
-typedef struct nv_shm_data_t {
-    void *data_ptr;
-#ifndef USE_SEMAPHORE
-    pthread_mutex_t lock;
-    pthread_mutexattr_t attr;
-    pthread_cond_t cond;
-    nv_bool flag;
-#else
-    sem_t write_sem;
-    sem_t read_sem;
-} _nv_shm_data;
-
-typedef _nv_shm_data* nv_shm_data;
-
-typedef struct nv_shm_obj_t {
-    nv_reference_t base;
-
-    nv_enum shm_id;
-    char shm_name[SHM_NAME_MAX];
-    nv_size shm_size;
-    nv_shm_data data;
-#endif
-} _nv_shm_obj;
-
-
 typedef _nv_reference* nv_reference;
 
 typedef _nv_orientation* nv_orientation;
@@ -102,9 +77,7 @@ typedef _nv_imu_data* nv_imu_data;
 
 typedef _nv_altimeter_data* nv_altimeter_data;
 
-typedef _nv_shm_data* nv_shm_data;
-
-typedef _nv_shm_obj* nv_shm_obj;
+// typedef _nv_shm_obj* nv_shm_obj;
 
 
 
