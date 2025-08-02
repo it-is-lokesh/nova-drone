@@ -1,8 +1,15 @@
 #ifndef _NV_MATH_HPP_
 #define _NV_MATH_HPP_
 
+#include <math.h>
+
 template<typename T, uint32_t P, uint32_t Q>
-using nv_mat = T[P][Q];
+struct nv_mat {
+    T data[P][Q] = {};
+
+    T* operator[](size_t i) { return data[i]; }
+    const T* operator[](size_t i) const { return data[i]; }
+};
 
 template<
     typename In1, typename In2, typename Out,

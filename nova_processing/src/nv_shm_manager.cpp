@@ -120,7 +120,7 @@ int32_t nvShmManager::nvMapShm(nv_shm_mgr_header *header){
     int shm_fd = shm_open(shm, O_CREAT | O_RDWR, 0660);
     if(shm_fd == -1) perror("shm_open failed \n");
 
-    *header = (nv_shm_mgr_header)mmap(0, sizeof(nv_shm_mgr_header_t), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    *header = (nv_shm_mgr_header)mmap(0, SHM_SIZE_MAX, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
 
     return shm_fd;
 }

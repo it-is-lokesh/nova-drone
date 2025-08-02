@@ -19,12 +19,12 @@ public:
     SubscriberIMU() : Node("node_subscriber_imu"){
         count = 10;
 
-        snprintf(metadata.shm_name, SHM_NAME_MAX, "test_shm_1\n");
-        snprintf(metadata.pname, SHM_NAME_MAX, "test_process_1\n");
+        snprintf(metadata.shm_name, SHM_NAME_MAX, "imu_shm\n");
+        snprintf(metadata.pname, PROCESS_NAME_MAX, "imu_interface\n");
 
         shm_fd = nvShmManager::nvMapShm(&header);
 
-        nvShmManager::nvGetShmPtr(header, sizeof(int), count, &metadata);
+        nvShmManager::nvGetShmPtr(header, sizeof(nv_imu_data_t), count, &metadata);
         
         imu_data = (nv_imu_data)metadata.data->data_ptr;
 
@@ -47,7 +47,6 @@ public:
 #else
             sem_wait(&metadata.data->write_sem);
 #endif
-            printf("loop: %d \n", loop++);
 
             imu_data[loop%count].sec = msg->header.stamp.sec;
             imu_data[loop%count].nsec = msg->header.stamp.nanosec;
@@ -67,6 +66,7 @@ public:
             imu_data[loop%count].orientation.x = msg->orientation.x;
             imu_data[loop%count].orientation.y = msg->orientation.y;
             imu_data[loop%count].orientation.z = msg->orientation.z;
+            imu_data[loop%count].orientation.w = msg->orientation.w;
             memcpy(imu_data[loop%count].orientation.covariance, msg->orientation_covariance.data(), 
                    msg->angular_velocity_covariance.size());
 
@@ -77,6 +77,7 @@ public:
 #else
             sem_post(&metadata.data->read_sem);
 #endif
+            loop++;
         };
         subscription_ = this->create_subscription<sensor_msgs::msg::Imu>("/nova/imu", 10, topic_callback);
     }

@@ -10,9 +10,12 @@ int main(){
 
     int loop;
     int shm_fd;
+    int count;
 
-    snprintf(metadata.shm_name, SHM_NAME_MAX, "test_shm_1\n");
-    snprintf(metadata.pname, SHM_NAME_MAX, "test_process_1\n");
+    count = 10;
+
+    snprintf(metadata.shm_name, SHM_NAME_MAX, "imu_shm\n");
+    snprintf(metadata.pname, PROCESS_NAME_MAX, "test_process_1\n");
 
     shm_fd = nvShmManager::nvMapShm(&header);
 
@@ -40,19 +43,21 @@ int main(){
 #endif
 
     fprintf(fp, "%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", 
-        imu_data->sec,
-        imu_data->nsec,
-        imu_data->linear_acceleration.x,
-        imu_data->linear_acceleration.y,
-        imu_data->linear_acceleration.z,
-        imu_data->angular_velocity.x,
-        imu_data->angular_velocity.y,
-        imu_data->angular_velocity.z,
-        imu_data->orientation.x,
-        imu_data->orientation.y,
-        imu_data->orientation.z,
-        imu_data->orientation.w
+        imu_data[loop%count].sec,
+        imu_data[loop%count].nsec,
+        imu_data[loop%count].linear_acceleration.x,
+        imu_data[loop%count].linear_acceleration.y,
+        imu_data[loop%count].linear_acceleration.z,
+        imu_data[loop%count].angular_velocity.x,
+        imu_data[loop%count].angular_velocity.y,
+        imu_data[loop%count].angular_velocity.z,
+        imu_data[loop%count].orientation.x,
+        imu_data[loop%count].orientation.y,
+        imu_data[loop%count].orientation.z,
+        imu_data[loop%count].orientation.w
     );
+
+    loop++;
 
     // printf("linear acceleration: \n");
     // printf("    x: %f \n", imu_data->linear_acceleration.x);
