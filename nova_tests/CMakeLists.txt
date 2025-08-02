@@ -35,6 +35,7 @@ target_link_libraries(mat_mul PUBLIC nova_processing::nova_processing)
 add_executable(shm_manager src/shm_manager.cpp)
 add_executable(producer src/producer.cpp)
 add_executable(consumer src/consumer.cpp)
+add_executable(orientation_update src/orientation_update.cpp)
 
 install(TARGETS
   shm_manager
@@ -48,9 +49,14 @@ install(TARGETS
   consumer
   DESTINATION lib/${PROJECT_NAME})
 
+install(TARGETS
+  orientation_update
+  DESTINATION lib/${PROJECT_NAME})
+
 target_link_libraries(shm_manager PUBLIC nova_processing::nova_processing)
 target_link_libraries(producer PUBLIC nova_processing::nova_processing)
 target_link_libraries(consumer PUBLIC nova_processing::nova_processing)
+target_link_libraries(orientation_update PUBLIC nova_processing::nova_processing)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
