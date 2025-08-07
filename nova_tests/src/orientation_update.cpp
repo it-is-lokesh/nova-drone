@@ -3,9 +3,11 @@
 
 nv_mat<float64_t, 3, 1> get_orient_w(nv_mat<float64_t, 3, 3> &R){
     nv_mat<float64_t, 3, 1> ret;
-    ret[0][0] = R[2][1]==0?0.0:atan2(R[2][1], R[2][2]);
-    ret[1][0] = asin(R[2][0]);
-    ret[2][0] = R[1][0]==0?0.0:atan2(R[1][0], R[0][0]);
+    ret[0][0] = atan2(R[2][1], R[2][2]);
+    if(R[2][0]<=-1)ret[1][0] = -asin(-1);
+    else if(R[2][0]>=1)ret[1][0] = -asin(1);
+    else ret[1][0] = -asin(R[2][0]);
+    ret[2][0] = atan2(R[1][0], R[0][0]);
     return ret;
 }
 
@@ -37,9 +39,9 @@ int main(){
     nv_mat<float64_t, 3, 1> orient_w;
     nv_mat<float64_t, 3, 1> omega_b;
     nv_mat<float64_t, 3, 3> omega_skew;
-    omega_b[0][0] = 3.14/10;
+    omega_b[0][0] = 0;
     omega_b[1][0] = 0;
-    omega_b[2][0] = 0;
+    omega_b[2][0] = 3.14/2;
     omega_skew = get_skew_sym_mat(omega_b);
 
     for(int j=0;j<3;j++){
@@ -57,7 +59,7 @@ int main(){
     printf("orientation: %f %f %f \n", orient_w[0][0], orient_w[1][0], orient_w[2][0]);
 
     omega_b[0][0] = 0;
-    omega_b[1][0] = 3.14/4;
+    omega_b[1][0] = 3.14/2;
     omega_b[2][0] = 0;
     omega_skew = get_skew_sym_mat(omega_b);
 

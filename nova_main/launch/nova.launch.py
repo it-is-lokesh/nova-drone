@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 import os
 from ament_index_python.packages import get_package_share_directory
 
-# gz topic -t /nova/gazebo/command/motor_speed --msgtype gz.msgs.Actuators -p 'velocity:[400, 400, 400, 400]'
+# gz topic -t /nova/gazebo/command/motor_speed --msgtype gz.msgs.Actuators -p 'velocity:[383.702, 383.702, 383.702, 383.702]'
 
 def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
@@ -39,6 +39,6 @@ def generate_launch_description():
     return LaunchDescription([
         gz_sim,
         ros_gz_bridge,
-        # init_imu_interface,
-        # init_shm,
+        init_imu_interface,
+        init_shm,
     ])
