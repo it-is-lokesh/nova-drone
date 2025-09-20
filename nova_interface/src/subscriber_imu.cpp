@@ -48,8 +48,8 @@ public:
             sem_wait(&metadata.data->write_sem);
 #endif
 
-            // imu_data[loop%count].sec = msg->header.stamp.sec;
-            imu_data[loop%count].sec = loop;
+            imu_data[loop%count].sec = msg->header.stamp.sec;
+            // imu_data[loop%count].sec = loop;
             imu_data[loop%count].nsec = msg->header.stamp.nanosec;
 
             imu_data[loop%count].linear_acceleration.x = msg->linear_acceleration.x;

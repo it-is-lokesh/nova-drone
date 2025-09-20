@@ -49,9 +49,9 @@ public:
 #else
             sem_wait(&metadata.data->write_sem);
 #endif
-            altimeter_data->vertical_position = msg->vertical_position;
-            altimeter_data->vertical_reference = msg->vertical_reference;
-            altimeter_data->vertical_velocity = msg->vertical_velocity;
+            altimeter_data[loop%count].vertical_position = msg->vertical_position;
+            altimeter_data[loop%count].vertical_reference = msg->vertical_reference;
+            altimeter_data[loop%count].vertical_velocity = msg->vertical_velocity;
 
 #ifndef USE_SEMAPHORE
             pthread_mutex_unlock(&metadata.data->lock);

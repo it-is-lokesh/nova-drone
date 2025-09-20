@@ -6,16 +6,18 @@
 int main(){
     nvDrone drone;
 
-    std::thread update_orientation(&nvStateEstimator::nvUpdateStateThread, &drone.state_estimator);
+    std::thread update_imu(&nvStateEstimator::nvUpdateIMUThread, &drone.state_estimator);
+    std::thread update_altimeter(&nvStateEstimator::nvUpdateAltimeterThread, &drone.state_estimator);
 
-    while(1){
-        drone.state_estimator.nvPrintAccelerationWorld();
-        drone.state_estimator.nvPrintVelocityWorld();
+    // while(1){
+        // drone.state_estimator.nvPrintAccelerationWorld();
+        // drone.state_estimator.nvPrintVelocityWorld();
         // drone.state_estimator.nvPrintPositionWorld();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // }
 
-    update_orientation.join();
+    update_imu.join();
+    update_altimeter.join();
 
     return 0;
 

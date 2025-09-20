@@ -31,6 +31,11 @@ def generate_launch_description():
         output='screen'
     )
 
+    init_altimeter_interface = ExecuteProcess(
+        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_altimeter',],
+        output='screen'
+    )
+
     init_shm = ExecuteProcess(
         cmd=['ros2', 'run', 'nova_application', 'nv_shm_init',],
         output='screen'
@@ -39,6 +44,7 @@ def generate_launch_description():
     return LaunchDescription([
         gz_sim,
         ros_gz_bridge,
-        init_imu_interface,
         init_shm,
+        init_imu_interface,
+        init_altimeter_interface,
     ])

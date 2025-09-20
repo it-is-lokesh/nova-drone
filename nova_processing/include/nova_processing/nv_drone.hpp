@@ -42,9 +42,11 @@ public:
 
 class nvStateEstimator {
 private:
-    float32_t nvTimePeriod;
+    float32_t nvTimePeriodIMU;
+    float32_t nvTimePeriodAltimeter;
 
-    pthread_mutex_t lock;
+    pthread_mutex_t lock_imu;
+    pthread_mutex_t lock_altimeter;
 
     nv_vec<float64_t, 3> nvOrientBody;
     nv_vec<float64_t, 3> nvOrientWorld;
@@ -57,19 +59,35 @@ private:
 
     nvKalmanFilter acc_kf;
 
+    nv_shm_mgr_header header;
+    int32_t shm_fd;
+
 #ifdef LOG_IMU_DATA
     FILE *fp;
 #endif
 
 public:
-    nvStateEstimator(float32_t time_period) : acc_kf(0.01) {
+    nvStateEstimator(float32_t time_period_imu, float32_t time_period_altimeter) : acc_kf(0.01) {
+        this->nvTimePeriodIMU = time_period_imu;
+        this->nvTimePeriodAltimeter = time_period_altimeter;
         nvInitializeIdentityMatrix(this->nvRotMat);
-        pthread_mutex_init(&this->lock, NULL);
+        pthread_mutex_init(&this->lock_imu, NULL);
+        pthread_mutex_init(&this->lock_altimeter, NULL);
+        shm_fd = nvShmManager::nvMapShm(&header);
+    }
+
+    ~nvStateEstimator() {
+        munmap(header, sizeof(nv_shm_mgr_header_t));
+        close(shm_fd);
     }
 
     nv_status nvUpdateIMUThread();
 
+    nv_status nvUpdateAltimeterThread();
+
     nv_status nvUpdateIMU(nv_imu_data imu_data, int32_t loop_index);
+
+    nv_status nvUpdateAltitude(nv_altimeter_data altimeter_data, int32_t loop_index);
 
     nv_status nvUpdatePosition(nv_imu_data imu_data, int32_t loop_index);
 
@@ -107,7 +125,7 @@ private:
 public:
     nvStateEstimator state_estimator;
 
-    nvDrone() : state_estimator(0.01) {}
+    nvDrone() : state_estimator(0.01, 0.025) {}
 
     nvStateEstimator *nvGetStateEstimator();
 };

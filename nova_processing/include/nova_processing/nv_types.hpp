@@ -84,26 +84,27 @@ typedef _nv_altimeter_data* nv_altimeter_data;
 
 class nvPingPongCounter {
     int32_t value;
-    int32_t max;
+    int32_t size;
 
 public:
-    explicit nvPingPongCounter(int32_t start = 0, int32_t max_val = 0)
-        : value(start), max(max_val) {}
+    explicit nvPingPongCounter(int32_t start = 0, int32_t size_val = 0)
+        : value(start), size(size_val) {}
 
     // inline getters
-    inline int32_t get() const { return value; }
-    inline int32_t next() { value = (value + 1) % (max + 1); return value; }
+    inline int32_t get_value() const { return value; }
+    inline int32_t next() { value = (value + 1) % size; return value; }
+    inline int32_t get_size() const { return size; }
 
     // assignment
     inline nvPingPongCounter& operator=(int32_t v) {
-        value = v % (max + 1);
+        value = v % size;
         return *this;
     }
 
     // prefix increment/decrement
     inline nvPingPongCounter& operator++() { next(); return *this; }
     inline nvPingPongCounter& operator--() {
-        value = (value - 1 + (max + 1)) % (max + 1);
+        value = (value - 1 + size) % size;
         return *this;
     }
 
@@ -113,11 +114,11 @@ public:
 
     // arithmetic
     inline nvPingPongCounter& operator*=(int32_t factor) {
-        value = (value * factor) % (max + 1);
+        value = (value * factor) % size;
         return *this;
     }
     inline nvPingPongCounter& operator/=(int32_t divisor) {
-        value = (divisor ? value / divisor : 0) % (max + 1);
+        value = (divisor ? value / divisor : 0) % size;
         return *this;
     }
 

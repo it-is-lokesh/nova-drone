@@ -19,7 +19,7 @@
 #define SHM_NAME_MAX (20)
 
 #define PROCESS_COUNT_MAX (10)
-#define PROCESS_NAME_MAX (20)
+#define PROCESS_NAME_MAX (32)
 
 #define SHM_OBJ_NAME "nv_shm_interface"
 
