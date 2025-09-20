@@ -67,11 +67,9 @@ public:
         pthread_mutex_init(&this->lock, NULL);
     }
 
-    nv_status nvUpdateStateThread();
+    nv_status nvUpdateIMUThread();
 
-    nv_status nvUpdateState(nv_imu_data imu_data, int32_t loop_index);
-
-    nv_status nvUpdateOrientation(nv_imu_data imu_data, int32_t loop_index);
+    nv_status nvUpdateIMU(nv_imu_data imu_data, int32_t loop_index);
 
     nv_status nvUpdatePosition(nv_imu_data imu_data, int32_t loop_index);
 

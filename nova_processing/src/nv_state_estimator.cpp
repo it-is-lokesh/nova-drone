@@ -1,6 +1,6 @@
 #include <nova_processing/nv_drone.hpp>
 
-nv_status nvStateEstimator::nvUpdateStateThread() {
+nv_status nvStateEstimator::nvUpdateIMUThread() {
     nv_shm_metadata_t metadata;
     nv_shm_mgr_header header;
 
@@ -40,7 +40,7 @@ nv_status nvStateEstimator::nvUpdateStateThread() {
         pthread_mutex_lock(&this->lock);
 
         // Update state
-        this->nvUpdateState(imu_data, counter.get());
+        this->nvUpdateOrientation(imu_data, counter.get());
 
         // Unlock mutex
         pthread_mutex_unlock(&this->lock);
@@ -60,39 +60,26 @@ nv_status nvStateEstimator::nvUpdateStateThread() {
     return NV_SUCCESS;
 }
 
-nv_status nvStateEstimator::nvUpdateState(nv_imu_data imu_data,
-                                          int32_t loop_index) {
-    nv_imu_data data = &imu_data[loop_index];
-
+nv_status nvStateEstimator::nvUpdateIMU(nv_imu_data imu_data,
+                                                int32_t loop_index) {
 #ifdef LOG_IMU_DATA
     // Log data to file
     fprintf(fp, "%d,%d,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f\n", 
-        data->sec,
-        data->nsec,
-        data->linear_acceleration.x,
-        data->linear_acceleration.y,
-        data->linear_acceleration.z,
-        data->angular_velocity.x,
-        data->angular_velocity.y,
-        data->angular_velocity.z,
-        data->orientation.x,
-        data->orientation.y,
-        data->orientation.z,
-        data->orientation.w
+        imu_data->sec,
+        imu_data->nsec,
+        imu_data->linear_acceleration.x,
+        imu_data->linear_acceleration.y,
+        imu_data->linear_acceleration.z,
+        imu_data->angular_velocity.x,
+        imu_data->angular_velocity.y,
+        imu_data->angular_velocity.z,
+        imu_data->orientation.x,
+        imu_data->orientation.y,
+        imu_data->orientation.z,
+        imu_data->orientation.w
     );
 #endif
 
-    // Update orientation
-    this->nvUpdateOrientation(data, loop_index);
-
-    // Update position
-    this->nvUpdatePosition(data, loop_index);
-
-    return NV_SUCCESS;
-}
-
-nv_status nvStateEstimator::nvUpdateOrientation(nv_imu_data imu_data,
-                                                int32_t loop_index) {
     this->nvOrientBody[0] = imu_data->angular_velocity.x;
     this->nvOrientBody[1] = imu_data->angular_velocity.y;
     this->nvOrientBody[2] = imu_data->angular_velocity.z;
@@ -114,6 +101,15 @@ nv_status nvStateEstimator::nvUpdateOrientation(nv_imu_data imu_data,
     if (loop_index % 10 == 0) {
         nvOrthonormalizeMatrix(this->nvRotMat);
     }
+
+    nv_vec<float64_t, 3> nvAccTransformed;
+    nvAccTransformed[0] = imu_data->linear_acceleration.x;
+    nvAccTransformed[1] = imu_data->linear_acceleration.y;
+    nvAccTransformed[2] = imu_data->linear_acceleration.z;
+
+    nvAccTransformed = this->nvRotMat * nvAccTransformed;
+
+    this->nvAccelerationWorld = nvAccTransformed;
     return NV_SUCCESS;
 }
 
