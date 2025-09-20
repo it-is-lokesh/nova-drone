@@ -16,7 +16,7 @@ typedef float float32_t;
 typedef double float64_t;
 typedef bool nv_bool;
 typedef size_t nv_size;
-typedef nv_enum nv_status;
+// typedef nv_enum nv_status;
 
 typedef struct nv_reference_t {
     

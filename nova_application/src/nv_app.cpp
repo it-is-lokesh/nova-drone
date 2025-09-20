@@ -11,11 +11,13 @@ int main(){
     while(1){
         drone.state_estimator.nvPrintAccelerationWorld();
         drone.state_estimator.nvPrintVelocityWorld();
-        drone.state_estimator.nvPrintPositionWorld();
+        // drone.state_estimator.nvPrintPositionWorld();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     update_orientation.join();
+
+    return 0;
 
 
 }

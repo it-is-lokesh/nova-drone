@@ -1,22 +1,12 @@
 #include <nova_processing/nv_drone.hpp>
 
-nvStateEstimator::nvStateEstimator() {
-    nvInitializeIdentityMatrix(this->nvRotMat);
-    pthread_mutex_init(&this->lock, NULL);
-}
-
-nv_status nvStateEstimator::nvSetTimePeriod(float32_t time_period) {
-    this->nvTimePeriod = time_period;
-    return 0;
-}
-
 nv_status nvStateEstimator::nvUpdateStateThread() {
     nv_shm_metadata_t metadata;
     nv_shm_mgr_header header;
 
     nv_imu_data imu_data;
 
-    nvPingPongCounter counter(0, 10);
+    nvPingPongCounter counter(0, 9);
     int32_t shm_fd;
 
     snprintf(metadata.shm_name, SHM_NAME_MAX, "imu_shm\n");
@@ -27,6 +17,17 @@ nv_status nvStateEstimator::nvUpdateStateThread() {
     nvShmManager::nvSetShmPtr(header, &metadata);
 
     imu_data = (nv_imu_data)metadata.data->data_ptr;
+
+#ifdef LOG_IMU_DATA
+    // Open file to store the data in a csv file
+
+    fp = fopen("imu_logs.csv", "a+");
+
+    fprintf(fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", "sec", "nsec", "lin_acc.x", "lin_acc.y", "lin_acc.z", 
+                                            "ang_vel.x", "ang_vel.y", "ang_vel.z",
+                                            "orient.x", "orient.y", "orient.z", "orient.w"
+                                            );
+#endif
 
     while (1) {
 #ifndef USE_SEMAPHORE
@@ -56,12 +57,30 @@ nv_status nvStateEstimator::nvUpdateStateThread() {
     munmap(header, sizeof(nv_shm_mgr_header_t));
     close(shm_fd);
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvUpdateState(nv_imu_data imu_data,
                                           int32_t loop_index) {
     nv_imu_data data = &imu_data[loop_index];
+
+#ifdef LOG_IMU_DATA
+    // Log data to file
+    fprintf(fp, "%d,%d,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f,%.17f\n", 
+        data->sec,
+        data->nsec,
+        data->linear_acceleration.x,
+        data->linear_acceleration.y,
+        data->linear_acceleration.z,
+        data->angular_velocity.x,
+        data->angular_velocity.y,
+        data->angular_velocity.z,
+        data->orientation.x,
+        data->orientation.y,
+        data->orientation.z,
+        data->orientation.w
+    );
+#endif
 
     // Update orientation
     this->nvUpdateOrientation(data, loop_index);
@@ -69,7 +88,7 @@ nv_status nvStateEstimator::nvUpdateState(nv_imu_data imu_data,
     // Update position
     this->nvUpdatePosition(data, loop_index);
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvUpdateOrientation(nv_imu_data imu_data,
@@ -88,34 +107,31 @@ nv_status nvStateEstimator::nvUpdateOrientation(nv_imu_data imu_data,
         }
     }
 
-    nvMatrixMultiply(this->nvRotMat, omega_skew, this->nvRotMat);
+    this->nvRotMat = this->nvRotMat * omega_skew;
 
     this->nvOrientWorld = nvGetOrientationFromRotMat(this->nvRotMat);
 
     if (loop_index % 10 == 0) {
         nvOrthonormalizeMatrix(this->nvRotMat);
     }
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvUpdatePosition(nv_imu_data imu_data, int32_t loop_index) {
-    this->nvAccelerationBody[0] = imu_data->linear_acceleration.x;
-    this->nvAccelerationBody[1] = imu_data->linear_acceleration.y;
-    this->nvAccelerationBody[2] = imu_data->linear_acceleration.z;
+    nv_vec<float64_t, 3> nvAccTransformed;
+    nvAccTransformed[0] = imu_data->linear_acceleration.x;
+    nvAccTransformed[1] = imu_data->linear_acceleration.y;
+    nvAccTransformed[2] = imu_data->linear_acceleration.z;
 
-    nvMatrixMultiply(this->nvRotMat, this->nvAccelerationBody, this->nvAccelerationWorld);
+    nvAccTransformed = this->nvRotMat * nvAccTransformed;
 
-    this->nvAccelerationWorld[2] -=9.8;
+    this->acc_kf.nvStep(nvAccTransformed);
 
-    for(int8_t i=0; i<3; i++){
-        this->nvVelocityWorld[i] += this->nvAccelerationWorld[i] * this->nvTimePeriod;
-    }
+    this->nvPositionWorld = this->acc_kf.nvGetPositionEstimate();
+    this->nvVelocityWorld = this->acc_kf.nvGetVelocityEstimate();
+    this->nvAccelerationWorld = this->acc_kf.nvGetAccelerationEstimate();
 
-    for(int8_t i=0;i<3;i++){
-        this->nvPositionWorld[i] += this->nvVelocityWorld[i] * this->nvTimePeriod;
-    }
-
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_vec<float64_t, 3> nvStateEstimator::nvGetOrientationWorld() {
@@ -172,7 +188,7 @@ nv_status nvStateEstimator::nvPrintOrientationWorld() {
     printf("OrientationWorld: %f %f %f \n", this->nvOrientWorld[0], this->nvOrientWorld[1],
            this->nvOrientWorld[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintOrientationBody() {
@@ -180,7 +196,7 @@ nv_status nvStateEstimator::nvPrintOrientationBody() {
     printf("OrientationBody: %f %f %f \n", this->nvOrientBody[0], this->nvOrientBody[1],
            this->nvOrientBody[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintRotationMatrix() {
@@ -191,7 +207,7 @@ nv_status nvStateEstimator::nvPrintRotationMatrix() {
     // TODO: Complete this function
     printf("nv_status nvStateEstimator::nvPrintRotationMatrix() function not implemented \n");
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintAccelerationBody() {
@@ -199,15 +215,15 @@ nv_status nvStateEstimator::nvPrintAccelerationBody() {
     printf("AccelerationBody: %f %f %f \n", this->nvAccelerationBody[0], this->nvAccelerationBody[1],
            this->nvAccelerationBody[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintAccelerationWorld() {
     pthread_mutex_lock(&this->lock);
-    printf("AccelerationWorld: %f %f %f \n", this->nvAccelerationWorld[0], this->nvAccelerationWorld[1],
+    printf("AccelerationWorld: %0.17f %0.17f %0.17f \n", this->nvAccelerationWorld[0], this->nvAccelerationWorld[1],
            this->nvAccelerationWorld[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintVelocityWorld() {
@@ -215,7 +231,7 @@ nv_status nvStateEstimator::nvPrintVelocityWorld() {
     printf("VelocityWorld: %f %f %f \n", nvVelocityWorld[0], nvVelocityWorld[1],
            nvVelocityWorld[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvStateEstimator::nvPrintPositionWorld() {
@@ -223,5 +239,5 @@ nv_status nvStateEstimator::nvPrintPositionWorld() {
     printf("PositionWorld: %f %f %f \n", nvPositionWorld[0], nvPositionWorld[1],
            nvPositionWorld[2]);
     pthread_mutex_unlock(&this->lock);
-    return 0;
+    return NV_SUCCESS;
 }

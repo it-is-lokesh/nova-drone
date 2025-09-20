@@ -45,3 +45,33 @@ nv_vec<float64_t, 3> nvGetOrientationFromRotMat(nv_mat<float64_t, 3, 3> &R){
     ret[2] = atan2(R[1][0], R[0][0]);
     return ret;
 }
+
+nv_status nvGetEulerDot(nv_vec<float64_t,3>& omega, nv_vec<float64_t,3>& ang, nv_vec<float64_t,3>& out) {
+    float64_t cr = cos(ang[0]), sr = sin(ang[0]);
+    float64_t tp = tan(ang[1]), cp = cos(ang[1]);
+
+    out[0] = omega[0] + sr*tp*omega[1] + cr*tp*omega[2];
+    out[1] = cr*omega[1] - sr*omega[2];
+    out[2] = sr/cp*omega[1] + cr/cp*omega[2];
+    return NV_SUCCESS;
+}
+
+nv_status nvEulerToRot(nv_vec<float64_t,3>& ang, nv_mat<float64_t,3,3>& R) {
+    float64_t cr = cos(ang[0]), sr = sin(ang[0]);
+    float64_t cp = cos(ang[1]), sp = sin(ang[1]);
+    float64_t cy = cos(ang[2]), sy = sin(ang[2]);
+
+    R[0][0] = cy*cp;  R[0][1] = cy*sp*sr - sy*cr;  R[0][2] = cy*sp*cr + sy*sr;
+    R[1][0] = sy*cp;  R[1][1] = sy*sp*sr + cy*cr;  R[1][2] = sy*sp*cr - cy*sr;
+    R[2][0] = -sp;    R[2][1] = cp*sr;             R[2][2] = cp*cr;
+    return NV_SUCCESS;
+}
+
+
+class nvExtendedKalmanFilter {
+private:
+    
+public:
+    
+};
+

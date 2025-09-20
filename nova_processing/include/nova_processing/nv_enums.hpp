@@ -22,7 +22,7 @@ typedef enum {
     NV_ERROR_NOT_IMPLEMENTED = -7,
 } nv_status_e;
 
-typedef nv_status_e nvstatus;
+typedef nv_status_e nv_status;
 
 typedef enum {
     NV_IDX_X = 0,

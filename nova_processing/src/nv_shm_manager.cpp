@@ -10,7 +10,7 @@ nv_status nvShmManager::nvRegisterProcess(nv_shm_mgr_header header, char *name){
         }
     }
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_size nvShmManager::nvGetMemOffset(nv_shm_mgr_header header, char *name){
@@ -59,7 +59,7 @@ nv_status nvShmManager::nvAdjustOffsets(nv_shm_mgr_header header, nv_size req_si
     header->used_size += req_size;
     header->avail_size -= req_size;
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvShmManager::nvGetFreeShmId(nv_shm_mgr_header header, uint8_t *shm_id){
@@ -75,7 +75,7 @@ nv_status nvShmManager::nvGetFreeShmId(nv_shm_mgr_header header, uint8_t *shm_id
         }
     }
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_status nvShmManager::nvGetShmPtr(nv_shm_mgr_header header, nv_size data_size, uint8_t count, nv_shm_metadata metadata){
@@ -90,7 +90,7 @@ nv_status nvShmManager::nvGetShmPtr(nv_shm_mgr_header header, nv_size data_size,
 
     nvRegisterProcess(header, metadata->pname);
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 nv_size nvShmManager::nvCalcShmSize(nv_size data_size, uint8_t count){
@@ -111,7 +111,7 @@ nv_status nvShmManager::nvSetShmPtr(nv_shm_mgr_header header, nv_shm_metadata me
 
     nvRegisterProcess(header, metadata->pname);
 
-    return 0;
+    return NV_SUCCESS;
 }
 
 int32_t nvShmManager::nvMapShm(nv_shm_mgr_header *header){
