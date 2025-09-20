@@ -16,3 +16,8 @@
   lazy: true
   direction: ROS_TO_GZ
 
+- topic_name: "/nova/navsat"
+  ros_type_name: "gps_msgs/msg/GPSFix"
+  gz_type_name: "gz.msgs.NavSat"
+  lazy: true
+  direction: GZ_TO_ROS

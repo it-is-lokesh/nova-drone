@@ -36,6 +36,11 @@ def generate_launch_description():
         output='screen'
     )
 
+    init_navsat_interface = ExecuteProcess(
+        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_navsat',],
+        output='screen'
+    )
+
     init_shm = ExecuteProcess(
         cmd=['ros2', 'run', 'nova_application', 'nv_shm_init',],
         output='screen'
@@ -47,4 +52,5 @@ def generate_launch_description():
         init_shm,
         init_imu_interface,
         init_altimeter_interface,
+        init_navsat_interface,
     ])

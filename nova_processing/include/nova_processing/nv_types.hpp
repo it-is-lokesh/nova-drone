@@ -68,6 +68,14 @@ typedef struct nv_altimeter_data_t {
     float32_t vertical_velocity;
 } _nv_altimeter_data;
 
+typedef struct nv_navsat_data_t {
+    nv_reference_t base;
+
+    float64_t latitude;
+    float64_t longitude;
+    float64_t altitude;
+} _nv_navsat_data;
+
 typedef _nv_reference* nv_reference;
 
 typedef _nv_orientation* nv_orientation;
@@ -79,6 +87,8 @@ typedef _nv_linear_acceleration* nv_linear_acceleration;
 typedef _nv_imu_data* nv_imu_data;
 
 typedef _nv_altimeter_data* nv_altimeter_data;
+
+typedef _nv_navsat_data* nv_navsat_data;
 
 // typedef _nv_shm_obj* nv_shm_obj;
 

@@ -13,6 +13,7 @@ find_package(ros_gz_interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(actuator_msgs REQUIRED)
 find_package(nova_processing REQUIRED)
+find_package(gps_msgs REQUIRED)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../nova_processing/include
@@ -20,6 +21,7 @@ include_directories(
 
 add_executable(node_subscriber_imu src/subscriber_imu.cpp)
 add_executable(node_subscriber_altimeter src/subscriber_altimeter.cpp)
+add_executable(node_subscriber_navsat src/subscriber_navsat.cpp)
 
 target_link_libraries(node_subscriber_imu PUBLIC 
   rclcpp::rclcpp 
@@ -30,6 +32,11 @@ target_link_libraries(node_subscriber_altimeter PUBLIC
   ${ros_gz_interfaces_TARGETS}
 )
 
+target_link_libraries(node_subscriber_navsat PUBLIC 
+  rclcpp::rclcpp
+  ${gps_msgs_TARGETS}
+)
+
 install(TARGETS
   node_subscriber_imu
   DESTINATION lib/${PROJECT_NAME})
@@ -38,8 +45,13 @@ install(TARGETS
   node_subscriber_altimeter
   DESTINATION lib/${PROJECT_NAME})
 
+install(TARGETS
+  node_subscriber_navsat
+  DESTINATION lib/${PROJECT_NAME})
+
 target_link_libraries(node_subscriber_imu PUBLIC nova_processing::nova_processing)
 target_link_libraries(node_subscriber_altimeter PUBLIC nova_processing::nova_processing)
+target_link_libraries(node_subscriber_navsat PUBLIC nova_processing::nova_processing)
 
 
 if(BUILD_TESTING)
