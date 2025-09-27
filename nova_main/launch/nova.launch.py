@@ -26,23 +26,37 @@ def generate_launch_description():
         config_file=os.path.join(pkg_nova_main, 'config', 'nova.yaml')
     )
 
-    init_imu_interface = ExecuteProcess(
-        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_imu',],
-        output='screen'
+    init_imu_interface = Node(
+        package='nova_interface',
+        executable='node_subscriber_imu',
+        name='node_subscriber_imu',
+        output='screen',
+        respawn=True,
+        respawn_delay=1.0,
     )
 
-    init_altimeter_interface = ExecuteProcess(
-        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_altimeter',],
-        output='screen'
+    init_altimeter_interface = Node(
+        package='nova_interface',
+        executable='node_subscriber_altimeter',
+        name='node_subscriber_altimeter',
+        output='screen',
+        respawn=True,
+        respawn_delay=1.0,
     )
 
-    init_navsat_interface = ExecuteProcess(
-        cmd=['ros2', 'run', 'nova_interface', 'node_subscriber_navsat',],
-        output='screen'
+    init_navsat_interface = Node(
+        package='nova_interface',
+        executable='node_subscriber_navsat',
+        name='node_subscriber_navsat',
+        output='screen',
+        respawn=True,
+        respawn_delay=1.0,
     )
 
-    init_shm = ExecuteProcess(
-        cmd=['ros2', 'run', 'nova_application', 'nv_shm_init',],
+    init_shm = Node(
+        package='nova_application',
+        executable='nv_shm_init',
+        name='nv_shm_init',
         output='screen'
     )
 
