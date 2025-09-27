@@ -44,10 +44,10 @@ nv_size nvShmManager::nvReserveMem(nv_shm_mgr_header header, nv_size data_size, 
 
     nvGetFreeShmId(header, &shm_id);
 
-    memcpy(header->shm_metadata->shm_name, shm_name, SHM_NAME_MAX);
-    header->shm_metadata->shm_id = shm_id;
-    header->shm_metadata->shm_size = req_size;
-    header->shm_metadata->data_offset = offset;
+    memcpy(header->shm_metadata[shm_id].shm_name, shm_name, SHM_NAME_MAX);
+    header->shm_metadata[shm_id].shm_id = shm_id;
+    header->shm_metadata[shm_id].shm_size = req_size;
+    header->shm_metadata[shm_id].data_offset = offset;
 
     pthread_mutex_unlock(&header->mutex);
 
