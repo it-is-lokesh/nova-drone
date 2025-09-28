@@ -63,6 +63,48 @@
             <visualize>true</visualize>
             <topic>nova/imu</topic>
             <enable_metrics>true</enable_metrics>
+            <imu>
+                <angular_velocity>
+                <x>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>      <!-- bias -->
+                    <stddev>0.0</stddev>  <!-- random noise -->
+                    </noise>
+                </x>
+                <y>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>
+                    <stddev>0.0</stddev>
+                    </noise>
+                </y>
+                <z>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>
+                    <stddev>0.0</stddev>
+                    </noise>
+                </z>
+                </angular_velocity>
+                <linear_acceleration>
+                <x>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>
+                    <stddev>0.0</stddev>
+                    </noise>
+                </x>
+                <y>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>
+                    <stddev>0.0</stddev>
+                    </noise>
+                </y>
+                <z>
+                    <noise type="gaussian">
+                    <mean>0.0</mean>
+                    <stddev>0.0</stddev>
+                    </noise>
+                </z>
+                </linear_acceleration>
+            </imu>
         </sensor>
 
         <sensor name="nova_altimeter" type="altimeter">
@@ -91,6 +133,36 @@
             <always_on>0</always_on>
             <update_rate>40</update_rate>
             <topic>nova/navsat</topic>
+            <gps>
+                <position_sensing>
+                    <horizontal>
+                        <noise type="gaussian">
+                        <mean>0.0</mean>      <!-- bias -->
+                        <stddev>0.0</stddev>  <!-- noise -->
+                        </noise>
+                    </horizontal>
+                    <vertical>
+                        <noise type="gaussian">
+                        <mean>0.0</mean>
+                        <stddev>0.0</stddev>
+                        </noise>
+                    </vertical>
+                </position_sensing>
+                <velocity_sensing>
+                    <horizontal>
+                        <noise type="gaussian">
+                        <mean>0.0</mean>
+                        <stddev>0.0</stddev>
+                        </noise>
+                    </horizontal>
+                    <vertical>
+                        <noise type="gaussian">
+                        <mean>0.0</mean>
+                        <stddev>0.0</stddev>
+                        </noise>
+                    </vertical>
+                </velocity_sensing>
+            </gps>
         </sensor>
 
         </link>
