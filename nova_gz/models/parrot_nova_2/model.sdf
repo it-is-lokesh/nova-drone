@@ -74,14 +74,14 @@
           <altimeter>
             <vertical_position>
               <noise type="gaussian">
-                <mean>0.1</mean>
-                <stddev>0.2</stddev>
+                <mean>0.0</mean>
+                <stddev>0.00</stddev>
               </noise>
             </vertical_position>
             <vertical_velocity>
               <noise type="gaussian">
-                <mean>0.2</mean>
-                <stddev>0.1</stddev>
+                <mean>0.0</mean>
+                <stddev>0.00</stddev>
               </noise>
             </vertical_velocity>
           </altimeter>

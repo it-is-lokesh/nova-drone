@@ -92,6 +92,46 @@ nv_status nvStateEstimator::nvUpdateAltimeterThread() {
     
 }
 
+nv_status nvStateEstimator::nvUpdateNavSatThread() {
+    nv_shm_metadata_t metadata;
+
+    nv_navsat_data navsat_data;
+
+    nvPingPongCounter counter(0, 9);
+
+    snprintf(metadata.shm_name, SHM_NAME_MAX, "navsat_shm\n");
+    snprintf(metadata.pname, PROCESS_NAME_MAX, "navsat_update\n");
+
+    nvShmManager::nvSetShmPtr(header, &metadata);
+
+    navsat_data = (nv_navsat_data)metadata.data->data_ptr;
+
+    while (1) {
+#ifndef USE_SEMAPHORE
+
+#else
+        sem_wait(&metadata.data->read_sem);
+#endif
+
+        // Lock mutex
+        pthread_mutex_lock(&this->lock_navsat);
+
+        // Update state
+        this->nvUpdateNavSat(&navsat_data[counter.get_value()%counter.get_size()], counter.get_value());
+
+        // Unlock mutex
+        pthread_mutex_unlock(&this->lock_navsat);
+
+        counter++;
+#ifndef USE_SEMAPHORE
+
+#else
+        sem_post(&metadata.data->write_sem);
+#endif
+    }
+    
+}
+
 nv_status nvStateEstimator::nvUpdateIMU(nv_imu_data imu_data,
                                                 int32_t loop_index) {
 #ifdef LOG_IMU_DATA
@@ -147,9 +187,21 @@ nv_status nvStateEstimator::nvUpdateIMU(nv_imu_data imu_data,
 
 nv_status nvStateEstimator::nvUpdateAltitude(nv_altimeter_data altimeter_data, int32_t loop_index) {
     float64_t prev_height = this->nvPositionWorld[2];
-    this->nvPositionWorld[2] = altimeter_data->vertical_position;
-    printf("Altitude: %f \n", this->nvPositionWorld[2]);
+    float64_t alpha = 0.9; // smoothing factor
+    float64_t smoothed_height = alpha * altimeter_data->vertical_position + (1 - alpha) * prev_height;
+    this->nvPositionWorld[2] = smoothed_height;
+    // printf("altitude meas: %f \n", altimeter_data->vertical_position);
+    // printf("smoothed altitude: %f \n", this->nvPositionWorld[2]);
     this->nvVelocityWorld[2] = (this->nvPositionWorld[2] - prev_height) / this->nvTimePeriodAltimeter;
+    return NV_SUCCESS;
+}
+
+nv_status nvStateEstimator::nvUpdateNavSat(nv_navsat_data navsat_data, int32_t loop_index) {
+    this->nvPositionWorld[0] = navsat_data->longitude;
+    this->nvPositionWorld[1] = navsat_data->latitude;
+    // this->nvPositionWorld[2] = navsat_data->altitude;
+    // printf("navsat meas: %f %f %f \n", this->nvPositionWorld[0], this->nvPositionWorld[1], this->nvPositionWorld[2]);
+
     return NV_SUCCESS;
 }
 

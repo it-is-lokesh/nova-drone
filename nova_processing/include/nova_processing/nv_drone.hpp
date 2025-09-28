@@ -47,6 +47,7 @@ private:
 
     pthread_mutex_t lock_imu;
     pthread_mutex_t lock_altimeter;
+    pthread_mutex_t lock_navsat;
 
     nv_vec<float64_t, 3> nvOrientBody;
     nv_vec<float64_t, 3> nvOrientWorld;
@@ -73,6 +74,7 @@ public:
         nvInitializeIdentityMatrix(this->nvRotMat);
         pthread_mutex_init(&this->lock_imu, NULL);
         pthread_mutex_init(&this->lock_altimeter, NULL);
+        pthread_mutex_init(&this->lock_navsat, NULL);
         shm_fd = nvShmManager::nvMapShm(&header);
     }
 
@@ -85,9 +87,13 @@ public:
 
     nv_status nvUpdateAltimeterThread();
 
+    nv_status nvUpdateNavSatThread();
+
     nv_status nvUpdateIMU(nv_imu_data imu_data, int32_t loop_index);
 
     nv_status nvUpdateAltitude(nv_altimeter_data altimeter_data, int32_t loop_index);
+
+    nv_status nvUpdateNavSat(nv_navsat_data navsat_data, int32_t loop_index);
 
     nv_status nvUpdatePosition(nv_imu_data imu_data, int32_t loop_index);
 
